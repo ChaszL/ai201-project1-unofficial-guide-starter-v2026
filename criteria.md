@@ -19,12 +19,11 @@ pipeline earns credit; *"80% seemed reasonable"* does not.
 
 ## 1. Retrieved chunks contain the answer
 
-For at least 4 of my 5 test questions, the retrieved chunks include one that
+For at least 3 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+Two of my questions are very specific and are only found in 2 documents each. I expect those questions to be diffcult to find answers for.
 
 ---
 
@@ -33,6 +32,7 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
+I want all the answers to provide at least once source, because the core of a RAG is for sources to be cited. If an answer has not source then there coulf be halucination
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
 
@@ -50,6 +50,7 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
+I chose this target because I noticed one of my questions could be considered relavent, while the others would not.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
@@ -57,6 +58,7 @@ in at least 4 of 5 tries.
 
 ## 4. Something about your chunks
 
+At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots.
 <!-- YOU WRITE THIS ONE.
 
      How would you know if your chunks were the right size? Name something
@@ -72,14 +74,14 @@ in at least 4 of 5 tries.
 
 
 **Why this target:**
-
+I chose this target because if my answers have accurate details that are needed to really answer the questions, then my chunk size is correct.
 
 
 ---
 
 ## 5. Your choice
 
-<!-- YOU WRITE THIS ONE TOO.
+At least one of my two multiple answer test questions will be answered with the correct multiple answers.
 
      Pick something you actually care about getting right. It could be about
      speed, about refusals, about a particular kind of question your corpus
@@ -90,7 +92,7 @@ in at least 4 of 5 tries.
 
 
 **Why this target:**
-
+Since I have two questions that have multiple answers, I want to make sure that at least one is answered correctly with all the answers. 
 
 
 ---
