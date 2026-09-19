@@ -107,11 +107,15 @@ and is slow rather than difficult.
      visible. Milestone 4. -->
 
 **Question:**
-
+"What is the central train hub of the reigon?"
 **Answer:**
+(best distance 0.539, cutoff 0.65)
 
-```
-```
+Based on the provided documents, the regional hub is Marchwood (from `guide_marchwood.md`).
+
+Sources retrieved: guide_accessibility.md, guide_brightwater.md, guide_marchwood.md, guide_pellew_sands.md, guide_regional_transport.md
+
+1 model calls this session, 690 tokens (668 in, 22 out)
 
 **My relevance cutoff:**
 
@@ -126,7 +130,16 @@ and is slow rather than difficult.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| Which towns have difficult terrain to walk through? | city_guides | 0.393 |
+| When is the market in Bridgewater square open? | city_guides | 0.472 |
+| Where is cash useful in the region? | city_guides | 0.419 |
+| Which place in the region is normally open during the winter? | city_guides | 0.530 |
+| When do the pubs serve food in Kestrelford? | city_guides | 0.307 |
+| What is the capital of Mongolia? | Out of Scope | 0.798 |
+| How do I change the oil in a diesel engine? | Out of Scope | 0.901 |
+| Who won the 1994 World Cup? | Out of Scope | 0.936 |
+| What is the recommended dosage of ibuprofen for a headache? | Out of Scope | 0.823 |
+| How do I write a for loop in Rust? | Out of Scope | 0.818 |
 
 ## How I Used AI
 
