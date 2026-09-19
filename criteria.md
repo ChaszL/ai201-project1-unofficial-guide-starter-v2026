@@ -74,14 +74,14 @@ At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spo
 
 
 **Why this target:**
-I chose this target because if my answers have accurate details that are needed to really answer the questions, then my chunk size is correct.
+This target is to make sure answers have accurate details and no cutoffs or inconsistent paragraphs.
 
 
 ---
 
 ## 5. Your choice
 
-At least one of my two multiple answer test questions will be answered with the correct multiple answers.
+At least one of my two multiple answer test questions will have two correct answers.
 
      Pick something you actually care about getting right. It could be about
      speed, about refusals, about a particular kind of question your corpus
@@ -92,7 +92,7 @@ At least one of my two multiple answer test questions will be answered with the 
 
 
 **Why this target:**
-Since I have two questions that have multiple answers, I want to make sure that at least one is answered correctly with all the answers. 
+I have two questions that have multiple answers. A sucessful RAG should be able to determine what those multiple answers are. 
 
 
 ---

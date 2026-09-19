@@ -29,8 +29,8 @@
 
 ## Chunking Strategy
 
-**Chunk size:**
-**Overlap:**
+**Chunk size:** 400 characters
+**Overlap:** 75 characters
 
 <!-- What about YOUR documents made you pick these numbers? Short posts and
      long sectioned guides don't want the same chunking, and "800 seemed
@@ -53,32 +53,55 @@
 
      Milestone 3. -->
 
-**Chunk 1** — source: `` — produced by: ``
+**Chunk 1** — source: guide_accessibility.md#0 `` — produced by: chunker.py::split_documents ``
 
-```
-```
+\# Getting around the region with limited mobility
 
-**Chunk 2** — source: `` — produced by: ``
+An honest assessment rather than a promotional one. Some of these places are difficult and it is better to know in advance.
 
-```
-```
+\## Straightforward
 
-**Chunk 3** — source: `` — produced by: ``
+**Chunk 2** — source: guide_corry_vale.md#3 `` — produced by: chunker.py::split_documents``
 
-```
-```
+drive between villages and walk the footpaths in between.
 
-**Chunk 4** — source: `` — produced by: ``
+\## Eat and drink
 
-```
-```
+One pub in the largest village serves food seven days a week. A second, in the third village, opens Thursday to Sunday. There is a farm shop at the valley mouth that sells bread, cheese and little else, and it closes at 4pm. Bring supplies; this is not a place with options.
 
-**Chunk 5** — source: `` — produced by: ``
+\## What to see
 
-```
-```
+**Chunk 3** — source: guide_givens_mill.md#0 `` — produced by: chunker.py::split_documents``
 
-## Sample Answer
+\# Givens Mill
+
+Givens Mill is a village of 700 built around a working watermill that still grinds flour commercially. It is the sort of place people visit for an afternoon and then talk about for longer than the visit lasted.
+
+\## Getting there
+
+**Chunk 4** — source: guide_kestrelford.md#6 `` — produced by: chunker.py::split_documents``
+
+any kind within four miles of the town in either direction.
+
+\## When to go
+
+Late spring and early autumn. The Saturday market runs year-round but is much reduced from November to February. August is busy with walkers. The single-track approach road is genuinely difficult in snow and the town can be cut off for a day or two most winters.
+
+\## Practical notes
+
+**Chunk 5** — source: guide_regional_transport.md#4 `` — produced by: chunker.py::split_documents``
+
+The Halden Bay coast service runs four times daily
+year-round.
+
+\## Driving
+
+Roads are good between the towns and poor on the approaches to both Kestrelford
+and Halden Bay. The Kestrelford approach is single-track with passing places
+for the final eight minutes. The Halden Bay coast road is cut into the cliff
+and is slow rather than difficult.
+
+\## Sample Answer
 
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->

@@ -22,6 +22,7 @@ to it, write down what you saw, and move on. That's a real observation about
 your pipeline, not giving up.
 """
 
+import re
 from dataclasses import dataclass
 
 import config
@@ -97,7 +98,46 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
       - Would splitting on paragraph breaks keep more thoughts intact than
         splitting on a character count?
     """
-    return fallback_split(documents)
+    chunk_size = 400  
+    overlap_chars = 75
+
+    chunks: list[Chunk] = []
+    for doc in documents:
+        paragraphs = [p.strip() for p in re.split(r"\n\s*\n", doc.text) if p.strip()]
+
+        index = 0
+        current = ""
+        for para in paragraphs:
+            candidate = f"{current}\n\n{para}" if current else para
+
+            if len(candidate) <= chunk_size:
+                current = candidate
+                continue
+
+            chunks.append(
+                Chunk(
+                    text=current,
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+            index += 1
+
+            tail = current[-overlap_chars:]
+            current = f"{tail}\n\n{para}" if tail else para
+
+        if current:
+            chunks.append(
+                Chunk(
+                    text=current,
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
