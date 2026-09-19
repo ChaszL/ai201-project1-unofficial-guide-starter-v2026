@@ -1,6 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
+<!-- Chasz Lacy City_Guides. -->
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
@@ -21,6 +21,7 @@
 
 ## What This Does
 
+This RAG model gives users answers to their questions about travelling and staying in the reigion. I picked the city_guides corpus which contains information about a large region of towns and cities. This model can answer questions on where to get food in a certain town/city or where to catch the train or walk around the reigon. 
 <!-- Three or four sentences. Which corpus you picked, and the kinds of
      questions your system answers. Write it for someone who has never seen
      this repo.
@@ -32,6 +33,7 @@
 **Chunk size:** 400 characters
 **Overlap:** 75 characters
 
+I changed the chunk size to 400 characters since the longest paragraph looks to be around 450 characters. I changed my overlap to 75 characters in case a long sentance came after a single paragraph that needed to be captured.  
 <!-- What about YOUR documents made you pick these numbers? Short posts and
      long sectioned guides don't want the same chunking, and "800 seemed
      reasonable" earns nothing. Point at something you noticed when you read
@@ -119,6 +121,7 @@ Sources retrieved: guide_accessibility.md, guide_brightwater.md, guide_marchwood
 
 **My relevance cutoff:**
 
+My in-corpus questions best distances topped out at 0.530, and my out-of-scope questions best distances started at 0.798. I set the cutoff at 0.65, in the middle of that gap.
 <!-- The number you set in config.py, and how you got there.
 
      You ran five questions your corpus covers and the five in OUT_OF_SCOPE
@@ -153,8 +156,10 @@ Sources retrieved: guide_accessibility.md, guide_brightwater.md, guide_marchwood
      Milestone 5. -->
 
 **1.**
+I asked claude to help me find how long the longest paragraph was in all the documents. It told me that the longest paragraph was 451 character and it was correct so I did'nt have to change anything
 
 **2.**
+I also asked claude to build my chunking function from the notes I made on paragraph size. It made the function for me but made the chunk and overlap size too low, so I made them higher until my chunks were right.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
