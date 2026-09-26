@@ -75,7 +75,8 @@ At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spo
 
 **Why this target:**
 This target is to make sure answers have accurate details and no cutoffs or inconsistent paragraphs.
-
+> **Revised in unit 2:** For At least 4 of 5 sampled chunks start and end on a complete sentence, with no fragment of a word or sentence at either edge.
+         > **Why revised:** Appropriate paragraph spots" wasn't something I could check the same way twice, so I couldn't really tell whether a chunk passed. In my runs, the chunks had correct information but in some answers there were sentences that seemed cut off and non-flowing. Checking the sentences of each response for complete and flowing sentences is something I can actually count. 
 
 ---
 

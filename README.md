@@ -188,15 +188,16 @@ I also asked claude to build my chunking function from the notes I made on parag
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 3 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots.| 4 of 5 | |  |  | Unmeasurable |
+| 5. At least one of my two multiple answer test questions will have two correct answers. | 1 of 2 | 1/2 | 2/2 | 2/2 | MET |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+
 
 ## Verdicts
 
@@ -211,11 +212,11 @@ I also asked claude to build my chunking function from the notes I made on parag
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunk contains the answer | MET | I determined this by seeing if the response contained a answer and if that answer was correct. |
+| 2 | Every answer names a source | MET | I checked every response to see weather it would cite its sources inside the text or as a source list stated in the response. all 5 had one of those. |
+| 3 | Gate stops out-of-corpus questions | MET | I looked to see if the out-of-corpus questions were refused or accepted by the gate and all were refused. |
+| 4 | At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots. | Unmeasurable | I could not meassure this since I could not tell where chunked paragraphs ended at and how they affected the answer. |
+| 5 | At least one of my two multiple answer test questions will have two correct answers. | MET | I looked at the two questions that have multiple answsers and determined weather the responses actually had 2 answers and if those answers were correct. |
 
 ## Diagnoses
 
