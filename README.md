@@ -192,11 +192,79 @@ I also asked claude to build my chunking function from the notes I made on parag
 | 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 4. At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots.| 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
-| 5. At least one of my two multiple answer test questions will have two correct answers. | 1 of 2 | 1/2 | 2/2 | 2/2 | MET |
+| 5. At least one of my two multiple answer test questions will be answered with the correct multiple answers. | 1 of 2 | 1/2 | 2/2 | 2/2 | MET |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+
+**Criterion 1**
+- Produced by: `run_eval.py::main`
+- Retrieval: `store.py::search`, chunks from `chunker.py::split_documents`
+- Corpus: `city_guides` (index variant `default`)
+Q: When is the market in Bridgewater square open? — run 2
+- Best distance: 0.4718 (passed the gate)
+- Sources retrieved: guide_eating.md, guide_halden_bay.md, guide_seasons.md
+
+```
+Brightwater's Tuesday market sets up at 7am in the square and is finished by 1pm. 
+
+Source: guide_eating.md
+```
+
+**Criterion 2**
+- Produced by: `run_eval.py::main`
+- Retrieval: `store.py::search`, chunks from `chunker.py::split_documents`
+- Corpus: `city_guides` (index variant `default`)
+Q: Where is cash useful in the region? — run 1
+- Best distance: 0.4188 (passed the gate)
+- Sources retrieved: guide_elder_ness.md, guide_givens_mill.md, guide_halden_bay.md, guide_kestrelford.md, guide_marchwood.md, guide_pellew_sands.md
+
+```
+Cash is still useful at the market and in smaller places. 
+Sources: `guide_pellew_sands.md`, `guide_givens_mill.md`, `guide_marchwood.md`, `guide_elder_ness.md`, `guide_halden_bay.md`, and `guide_kestrelford.md`.
+```
+
+**Criterion 3**
+Produced by run_eval.py::check_out_of_scope, cutoff 0.65. Refused 5 of 5
+
+Q: What is the capital of Mongolia?
+| Out-of-scope question | Best distance | Gate |
+|---|---|---|
+| What is the capital of Mongolia? | 0.798 | refused |
+| How do I change the oil in a diesel engine? | 0.901 | refused |
+| Who won the 1994 World Cup? | 0.936 | refused |
+| What is the recommended dosage of ibuprofen for a headache? | 0.823 | refused |
+| How do I write a for loop in Rust? | 0.818 | refused |
+
+
+**Criterion 4**
+- Produced by: `run_eval.py::main`
+- Retrieval: `store.py::search`, chunks from `chunker.py::split_documents`
+- Corpus: `city_guides` (index variant `default`)
+Q: Which towns have difficult terrain to walk through? — run 2
+- Best distance: 0.3930 (passed the gate)
+- Sources retrieved: guide_corry_vale.md, guide_halden_bay.md, guide_walking.md
+
+```
+Based on the provided documents:
+
+* In Halden Bay, the town is built on three levels connected by stepped lanes, making it hard going with luggage or a pushchair, and everything above the level harbour front is not level (*guide_halden_bay.md*). 
+* In Corry Vale, nothing within the valley is walkable from anything else as the villages are two to four miles apart, and the Corry Vale circuit is a moderate walk with hills, about nine miles with 500 metres of ascent (*guide_corry_vale.md* and *guide_walking.md*).
+```
+
+
+**Criterion 5**
+- Produced by: `run_eval.py::main`
+- Retrieval: `store.py::search`, chunks from `chunker.py::split_documents`
+- Corpus: `city_guides` (index variant `default`)
+Q: Which place in the region is normally open during the winter? — run 1
+- Best distance: 0.5298 (passed the gate)
+- Sources retrieved: guide_corry_vale.md, guide_halden_bay.md, guide_kestrelford.md, guide_marchwood.md, guide_seasons.md, guide_thornby_wells.md
+
+```
+Marchwood is one place in the region that works in winter, since almost everything is indoors and nothing closes seasonally (*guide_marchwood.md*). Additionally, Brightwater carries on during the winter because the university keeps it occupied (*guide_seasons.md*), and Thornby Wells is a reliable winter destination as its concert season runs from September to April (*guide_thornby_wells.md*).
+```
 
 
 ## Verdicts
@@ -216,7 +284,7 @@ I also asked claude to build my chunking function from the notes I made on parag
 | 2 | Every answer names a source | MET | I checked every response to see weather it would cite its sources inside the text or as a source list stated in the response. all 5 had one of those. |
 | 3 | Gate stops out-of-corpus questions | MET | I looked to see if the out-of-corpus questions were refused or accepted by the gate and all were refused. |
 | 4 | At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots. | MET | I read my responses to see if they had complete sentance structure and if all sentances made sense without breaks and mid sentance stops. |
-| 5 | At least one of my two multiple answer test questions will have two correct answers. | MET | I looked at the two questions that have multiple answsers and determined weather the responses actually had 2 answers and if those answers were correct. |
+| 5 | At least one of my two multiple answer test questions will be answered with the correct multiple answers. | MET | I looked at the two questions that have multiple answsers and determined weather the responses actually had 2 answers and if those answers were correct. |
 
 ## Diagnoses
 
@@ -238,7 +306,7 @@ I also asked claude to build my chunking function from the notes I made on parag
 
      Milestone 3. -->
 
-     I did not miss any targets and honestly think my targets were set too low. There are two criteria I would change. First, I would change my chunking criterion: At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots. This criteria was very simple and somewhat unmessurable. I want to change this because it was not specific enough and made it difficult for me to judge if everything was passing or not. I want to change it to all of my chunks will begin and end on a complete sentance with a complete thought on a paragraph. I also believe that my multiple answers criterion: At least one of my two multiple answer test questions will have two correct answers. should be chnaged to all multiple answer questions will have all answers in the response. I want to tighten this because my previous scoring was only measuring if at least one of the answers were present. That means as long as the a respomse had at least one correct answer, it would pass.
+I did not miss any targets and honestly think my targets were set too low. There are two criteria I would change. First, I would change my chunking criterion: At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots. This criteria was very simple and somewhat unmessurable. I want to change this because it was not specific enough and made it difficult for me to judge if everything was passing or not. I want to change it to all of my chunks will begin and end on a complete sentance with a complete thought on a paragraph. I also believe that my multiple answers criterion: "At least one of my two multiple answer test questions will be answered with the correct multiple answers." should be chnaged to all multiple answer questions will have all answers in the response. I want to tighten this because my previous scoring was only measuring if at least one of the answers were present. That means as long as the a respomse had at least one correct answer, it would pass. 
 
 ## The Improvement
 
@@ -246,7 +314,7 @@ I also asked claude to build my chunking function from the notes I made on parag
 I chnaged my chunking stategy. I used claude to help me make the chunks evenly split between subjects that have complete thoughts in the documents.
 
 **Why I picked it:**
-I chose this because I wanted to make sure my chunking for multiple choice questions would actually answer the question but also make sure that full sentance and thoughts are not left out. 
+I chose this because I wanted to make sure my chunking for multiple choice questions would actually answer the question but also make sure that full sentence and thoughts are not left out like in the "Which towns have difficult terrain?" question where sentences are not flowing. 
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
@@ -258,11 +326,11 @@ I chose this because I wanted to make sure my chunking for multiple choice quest
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 3 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. All of my chunks will begin and end on a complete sentance with a complete thought on a paragraph.| 5/5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. All of my multiple answer test questions will have all the correct answers.| 2 of 2 | 1/2 | 1/2 | 1/2 | MISSED |
 
 **Did it help?**
 
@@ -272,6 +340,8 @@ I chose this because I wanted to make sure my chunking for multiple choice quest
      tell.
 
      Milestone 4. -->
+
+My new chunking strategy did help with making the chunks contain full thought paragraphs and complete sentences, but I also noticed that in one specific question with three answers, one answers is always missing. So this new strategy made my chunks cleaner and better, but is still leaving out needed context. My criterion 4 has gone from unmeasured to 5/5 for each run, but my multiple answer test has gone from MET to MISSED. 
 
 ## What's Still Broken
 
@@ -283,9 +353,13 @@ I chose this because I wanted to make sure my chunking for multiple choice quest
 
      Milestone 5. -->
 
+The criterion for answering multiple questions is still broken, I tried to adjust the top k and chunking to see if that would help it find all three answers. I am running out of time so I cannot investigate further. Right now answering a question with multiple answers is still broken. 
+
 ## What I'd Do Differently
 
 <!-- Knowing what you know now — which of your five criteria would you write
      differently, and why?
 
      Milestone 5. -->
+
+The criteria I would write differently is: All of my chunks will begin and end on a complete sentance with a complete thought on a paragraph. I think this one should be changed again to all the chunks will contain complete information about a subject rather than just stopping at the paragraph. That way the model will have context as well as full information. 
