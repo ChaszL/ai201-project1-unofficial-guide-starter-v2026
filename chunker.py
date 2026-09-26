@@ -81,36 +81,72 @@ def fallback_split(
     return chunks
 
 
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
+
+
+def _split_into_sentences(paragraph: str) -> list[str]:
+    """Split a paragraph into sentences, without dropping any text."""
+    sentences = [s.strip() for s in _SENTENCE_SPLIT_RE.split(paragraph) if s.strip()]
+    return sentences or [paragraph.strip()]
+
+
+def _sentence_overlap(text: str, max_chars: int) -> str:
+    """
+    The longest suffix of `text` made of whole sentences that still fits in
+    `max_chars`. Used as the overlap carried into the next chunk, so a chunk
+    never *opens* mid-sentence either. Only looks at the last paragraph, so
+    overlap never reaches back across a paragraph break.
+    """
+    if not text:
+        return ""
+    last_para = text.split("\n\n")[-1]
+    tail = ""
+    for sentence in reversed(_split_into_sentences(last_para)):
+        candidate = f"{sentence} {tail}".strip()
+        if len(candidate) > max_chars:
+            break
+        tail = candidate
+    return tail
+
+
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
-    Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
+    Split documents into chunks.
 
-    Right now it just calls the fallback. That is the plain, generic behaviour
-    the brief is talking about.
-
-    When you write your own strategy, set `produced_by` to
-    "chunker.py::split_documents" so your README's Sample Chunks section names
-    the right function. `app.py chunks` prints that string for you.
-
-    Things worth thinking about before you write any code:
-      - Are your documents short posts or long guides?
-      - Is the useful information in one sentence, or spread over a paragraph?
-      - Would splitting on paragraph breaks keep more thoughts intact than
-        splitting on a character count?
+    Paragraphs are the unit of splitting: a whole paragraph goes into a chunk
+    together whenever it fits. When a single paragraph is too long to fit in
+    one chunk on its own, it's broken on sentence boundaries instead of a raw
+    character count, so a chunk never opens or closes mid-sentence. The
+    overlap carried between consecutive chunks is trimmed to whole sentences
+    for the same reason.
     """
-    chunk_size = 400  
+    chunk_size = 400
     overlap_chars = 75
 
     chunks: list[Chunk] = []
     for doc in documents:
         paragraphs = [p.strip() for p in re.split(r"\n\s*\n", doc.text) if p.strip()]
 
+        # Flatten into (text, is_new_paragraph) units: a whole paragraph when
+        # it fits on its own, otherwise its individual sentences.
+        units: list[tuple[str, bool]] = []
+        for para in paragraphs:
+            if len(para) <= chunk_size:
+                units.append((para, True))
+            else:
+                for i, sentence in enumerate(_split_into_sentences(para)):
+                    units.append((sentence, i == 0))
+
         index = 0
         current = ""
-        for para in paragraphs:
-            candidate = f"{current}\n\n{para}" if current else para
+        for text, is_new_paragraph in units:
+            sep = "\n\n" if is_new_paragraph else " "
+            candidate = f"{current}{sep}{text}" if current else text
 
-            if len(candidate) <= chunk_size:
+            # Accept the candidate if it fits, or if `current` is empty —
+            # the latter means this single unit is already too long on its
+            # own, and we keep it whole rather than cut it mid-sentence.
+            if len(candidate) <= chunk_size or not current:
                 current = candidate
                 continue
 
@@ -124,8 +160,8 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
             )
             index += 1
 
-            tail = current[-overlap_chars:]
-            current = f"{tail}\n\n{para}" if tail else para
+            tail = _sentence_overlap(current, overlap_chars)
+            current = f"{tail}\n\n{text}" if tail else text
 
         if current:
             chunks.append(

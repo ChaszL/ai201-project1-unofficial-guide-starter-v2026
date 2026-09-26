@@ -75,7 +75,8 @@ At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spo
 
 **Why this target:**
 This target is to make sure answers have accurate details and no cutoffs or inconsistent paragraphs.
-> **Revised in unit 2:** For At least 4 of 5 sampled chunks start and end on a complete sentence, with no fragment of a word or sentence at either edge.
+> **Revised in unit 2:** All of my chunks will begin and end on a complete sentance with a complete thought on a paragraph.
+> 
          > **Why revised:** Appropriate paragraph spots" wasn't something I could check the same way twice, so I couldn't really tell whether a chunk passed. In my runs, the chunks had correct information but in some answers there were sentences that seemed cut off and non-flowing. Checking the sentences of each response for complete and flowing sentences is something I can actually count. 
 
 ---
@@ -95,7 +96,9 @@ At least one of my two multiple answer test questions will have two correct answ
 **Why this target:**
 I have two questions that have multiple answers. A sucessful RAG should be able to determine what those multiple answers are. 
 
-
+> **Revised in unit 2:** All of my multiple amswer test questions will have all the correct answers.
+> 
+         > **Why revised:** This crtierion was too low and needed to be increased to all multiple answers questions being answered with all answers instead of one. With the last criterion, only one correct answer was needed which meant just having an answer could pass. 
 ---
 
 <!-- ─────────────────────────────────────────────────────────────────────────

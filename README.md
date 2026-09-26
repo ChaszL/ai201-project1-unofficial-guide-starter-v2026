@@ -191,7 +191,7 @@ I also asked claude to build my chunking function from the notes I made on parag
 | 1. Retrieved chunk contains the answer | 3 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 | 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
-| 4. At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots.| 4 of 5 | |  |  | Unmeasurable |
+| 4. At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots.| 4 of 5 | 4/5 | 4/5 | 4/5 | MET |
 | 5. At least one of my two multiple answer test questions will have two correct answers. | 1 of 2 | 1/2 | 2/2 | 2/2 | MET |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
@@ -215,7 +215,7 @@ I also asked claude to build my chunking function from the notes I made on parag
 | 1 | Retrieved chunk contains the answer | MET | I determined this by seeing if the response contained a answer and if that answer was correct. |
 | 2 | Every answer names a source | MET | I checked every response to see weather it would cite its sources inside the text or as a source list stated in the response. all 5 had one of those. |
 | 3 | Gate stops out-of-corpus questions | MET | I looked to see if the out-of-corpus questions were refused or accepted by the gate and all were refused. |
-| 4 | At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots. | Unmeasurable | I could not meassure this since I could not tell where chunked paragraphs ended at and how they affected the answer. |
+| 4 | At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots. | MET | I read my responses to see if they had complete sentance structure and if all sentances made sense without breaks and mid sentance stops. |
 | 5 | At least one of my two multiple answer test questions will have two correct answers. | MET | I looked at the two questions that have multiple answsers and determined weather the responses actually had 2 answers and if those answers were correct. |
 
 ## Diagnoses
@@ -238,11 +238,15 @@ I also asked claude to build my chunking function from the notes I made on parag
 
      Milestone 3. -->
 
+     I did not miss any targets and honestly think my targets were set too low. There are two criteria I would change. First, I would change my chunking criterion: At least 4 of 5 sampleded chunks will begin and end in appropriate paragraph spots. This criteria was very simple and somewhat unmessurable. I want to change this because it was not specific enough and made it difficult for me to judge if everything was passing or not. I want to change it to all of my chunks will begin and end on a complete sentance with a complete thought on a paragraph. I also believe that my multiple answers criterion: At least one of my two multiple answer test questions will have two correct answers. should be chnaged to all multiple answer questions will have all answers in the response. I want to tighten this because my previous scoring was only measuring if at least one of the answers were present. That means as long as the a respomse had at least one correct answer, it would pass.
+
 ## The Improvement
 
 **What I changed:**
+I chnaged my chunking stategy. I used claude to help me make the chunks evenly split between subjects that have complete thoughts in the documents.
 
 **Why I picked it:**
+I chose this because I wanted to make sure my chunking for multiple choice questions would actually answer the question but also make sure that full sentance and thoughts are not left out. 
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
