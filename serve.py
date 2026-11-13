@@ -28,6 +28,8 @@ this file stays the bare shell until then.
 """
 
 import os
+import time
+from datetime import datetime, timezone
 
 from flask import Flask, jsonify, request
 
@@ -72,6 +74,10 @@ def ask():
     `"refused": true` so whatever calls this can tell the two apart.
     """
     from app import ask_pipeline
+    from runlog import log_run
+
+    # Start the clock as soon as the request arrives.
+    start = time.perf_counter()
 
     payload = request.get_json(silent=True) or {}
     question = (payload.get("question") or "").strip()
@@ -91,6 +97,23 @@ def ask():
         outcome = ask_pipeline(question, corpus=config.CORPUS)
     except Exception as exc:  # noqa: BLE001 — a reader gets this, not a traceback
         return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 500
+
+    # One record for this request, written to logs/runs.jsonl.
+    log_run(
+        {
+            "timestamp": datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
+            "status": "refused" if outcome["refused"] else "answered",
+            "question": question,
+            "answer": outcome["answer"],
+            "refused": outcome["refused"],
+            "best_distance": round(outcome["best_distance"], 4),
+            "threshold": outcome["threshold"],
+            "sources": outcome["sources"],
+            "corpus": config.CORPUS,
+            "top_k": config.TOP_K,
+            "duration_ms": round((time.perf_counter() - start) * 1000, 1),
+        }
+    )
 
     return jsonify(
         {
