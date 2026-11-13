@@ -82,27 +82,61 @@ def ask():
     payload = request.get_json(silent=True) or {}
     question = (payload.get("question") or "").strip()
 
+    # Failure 1: no question was sent. Log it, then return a 400.
     if not question:
-        return (
-            jsonify(
-                {
-                    "error": "Send JSON with a question in it, like "
-                    '{"question": "is the housing lottery random?"}'
-                }
-            ),
-            400,
+        error = (
+            "Send JSON with a question in it, like "
+            '{"question": "Which region is mostly open during winter?"}'
         )
+        log_run(
+            {
+                "timestamp": datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
+                "status": "bad_request",
+                "http_status": 400,
+                "question": question,
+                "answer": None,
+                "refused": None,
+                "best_distance": None,
+                "threshold": config.THRESHOLD,
+                "sources": [],
+                "corpus": config.CORPUS,
+                "top_k": config.TOP_K,
+                "duration_ms": round((time.perf_counter() - start) * 1000, 1),
+                "error": error,
+            }
+        )
+        return jsonify({"error": error}), 400
 
+    # Failure 2: something inside the pipeline crashed. Log it, then return a 500.
     try:
         outcome = ask_pipeline(question, corpus=config.CORPUS)
     except Exception as exc:  # noqa: BLE001 — a reader gets this, not a traceback
-        return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 500
+        error = f"{type(exc).__name__}: {exc}"
+        log_run(
+            {
+                "timestamp": datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
+                "status": "error",
+                "http_status": 500,
+                "question": question,
+                "answer": None,
+                "refused": None,
+                "best_distance": None,
+                "threshold": config.THRESHOLD,
+                "sources": [],
+                "corpus": config.CORPUS,
+                "top_k": config.TOP_K,
+                "duration_ms": round((time.perf_counter() - start) * 1000, 1),
+                "error": error,
+            }
+        )
+        return jsonify({"error": error}), 500
 
-    # One record for this request, written to logs/runs.jsonl.
+    # Success: answered or refused by the gate. Both are a 200.
     log_run(
         {
             "timestamp": datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
             "status": "refused" if outcome["refused"] else "answered",
+            "http_status": 200,
             "question": question,
             "answer": outcome["answer"],
             "refused": outcome["refused"],
@@ -112,6 +146,7 @@ def ask():
             "corpus": config.CORPUS,
             "top_k": config.TOP_K,
             "duration_ms": round((time.perf_counter() - start) * 1000, 1),
+            "error": None,
         }
     )
 
