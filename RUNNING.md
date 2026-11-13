@@ -255,3 +255,39 @@ units.
 
 `results/` is deliberately **not** in `.gitignore`. Your run logs are evidence
 that the test actually happened, and they're part of what gets graded.
+
+
+# Running It — Capstone (Path B: local with logs)
+
+## What the environment needs
+- **Python:** <3.13.15> (3.11–3.13 supported, NOT 3.14)
+- **Packages:** pinned in `requirements.txt`
+- **Model files:** all-MiniLM-L6-v2 embedding model, ~80 MB, downloaded automatically on first run
+- **API key:** a free Gemini key in `.env`
+- **Windows only:** install Microsoft C++ Build Tools ("Desktop development with C++") before `pip install`, or chromadb fails to build
+
+## One-time setup
+    python -m venv .venv
+    .venv\Scripts\Activate.ps1
+    pip install -r requirements.txt
+    copy .env.example .env
+    # in .env: paste your key after GEMINI_API_KEY= and set AI201_CORPUS=city_guides
+    python test.py              # all checks should PASS
+    python app.py index         # builds the search index
+
+## Start it (the single command)
+    $env:AI201_CACHE = "0"; python serve.py
+
+Server runs at http://localhost:5000. Cache is off so every question is a real model call.
+
+## Send it a question (second terminal)
+    curl.exe -X POST http://localhost:5000/ask -H "Content-Type: application/json" -d '{\"question\": \"When do the pubs serve food in Kestrelford?\"}'
+
+## Where the record goes
+Every request (answered, refused, bad input, or crash) adds one line to `logs/runs.jsonl`.
+
+## Problems I hit setting this up on a second computer
+- <chromadb failed to install: needed C++ Build Tools>
+- <terminal used the wrong Python, "No module named flask": activate .venv first>
+- <server still pointed at a test corpus: run `Remove-Item Env:AI201_CORPUS`>
+
