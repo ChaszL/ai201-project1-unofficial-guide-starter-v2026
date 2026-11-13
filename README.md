@@ -363,3 +363,16 @@ The criterion for answering multiple questions is still broken, I tried to adjus
      Milestone 5. -->
 
 The criteria I would write differently is: All of my chunks will begin and end on a complete sentance with a complete thought on a paragraph. I think this one should be changed again to all the chunks will contain complete information about a subject rather than just stopping at the paragraph. That way the model will have context as well as full information. 
+
+## Capstone
+
+**What This Extends**
+I am extending my RAG system for the city_guides corpus to include a single start command, structured logging that contains a record for every question, a cost measure, and a duration as well as timestamp of those questions.
+
+**The Shape**
+I chose Shape A (Deploy and instrument) and Path B (Running Locally): I choose these because I want to deploy this, but find navigating the URL hosting difficult. 
+
+**Out of Scope**
+I will not be changing my test questions, chunking, or top-k from unit two. I am not changing chunking and top-k because changing them in the past caused the model to give different answers, which were often wrong. I am not changing my test questions because then my before and after runs would not be measuring the same thing. 
+
+
