@@ -74,10 +74,11 @@ def ask():
     `"refused": true` so whatever calls this can tell the two apart.
     """
     from app import ask_pipeline
-    from runlog import log_run
+    from runlog import log_run, usage_snapshot
 
-    # Start the clock as soon as the request arrives.
+    # Start the clock and note the token totals as soon as the request arrives.
     start = time.perf_counter()
+    usage_before = usage_snapshot()
 
     payload = request.get_json(silent=True) or {}
     question = (payload.get("question") or "").strip()
@@ -103,7 +104,8 @@ def ask():
                 "top_k": config.TOP_K,
                 "duration_ms": round((time.perf_counter() - start) * 1000, 1),
                 "error": error,
-            }
+            },
+            usage_before,
         )
         return jsonify({"error": error}), 400
 
@@ -127,7 +129,8 @@ def ask():
                 "top_k": config.TOP_K,
                 "duration_ms": round((time.perf_counter() - start) * 1000, 1),
                 "error": error,
-            }
+            },
+            usage_before,
         )
         return jsonify({"error": error}), 500
 
@@ -147,7 +150,8 @@ def ask():
             "top_k": config.TOP_K,
             "duration_ms": round((time.perf_counter() - start) * 1000, 1),
             "error": None,
-        }
+        },
+        usage_before,
     )
 
     return jsonify(
