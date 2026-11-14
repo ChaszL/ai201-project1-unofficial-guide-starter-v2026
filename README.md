@@ -364,7 +364,7 @@ The criterion for answering multiple questions is still broken, I tried to adjus
 
 The criteria I would write differently is: All of my chunks will begin and end on a complete sentance with a complete thought on a paragraph. I think this one should be changed again to all the chunks will contain complete information about a subject rather than just stopping at the paragraph. That way the model will have context as well as full information. 
 
-## Capstone
+# Capstone
 
 **What This Extends**
 I am extending my RAG system for the city_guides corpus to include a single start command, structured logging that contains a record for every question, a cost measure, and a duration as well as timestamp of those questions.
@@ -378,6 +378,19 @@ I will not be changing my test questions, chunking, or top-k from unit two. I am
 **Instrumentation**
 
 Every request to `/ask` writes one JSON line to `logs/runs.jsonl`, produced by `runlog.py::log_run`, called from `serve.py::ask`. Failed requests (bad input and crashes) are logged too.
+
+**Running It**
+
+Path B, local with logs. Full setup is in [RUNNING.md](RUNNING.md).
+
+- **Python:** 3.13 (3.11–3.13 work; 3.14 does not)
+- **Dependencies:** `pip install -r requirements.txt` (on Windows, install Microsoft C++ Build Tools first)
+- **Model files:** all-MiniLM-L6-v2 embedding model, about 80 MB, downloaded automatically on the first run
+- **Start command:**
+
+      $env:AI201_CACHE = "0"; python serve.py
+
+  The server runs at http://localhost:5000. Every request adds one line to `logs/runs.jsonl`.
 
 | Field | What it holds |
 |---|---|
@@ -429,7 +442,7 @@ How I measured it: I ran 10 questions through the server with the cache off AI20
 
 
 
-**Results**
+**Results -Before**
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
@@ -498,3 +511,42 @@ All lines below are copied from `logs/runs.jsonl`. Produced by `serve.py` → `a
 - **Mechanism:** The answer was too long because the model was answering a question that had multiple answers and it was trying to give multiple answers. 
 
 There is a propmting pattern where propmting needs to be changed to answer multiple questions but also try to also limit how much is said on top of answering the questions. 
+
+**What I changed**
+I chnaged the grounding prompt for the AI model to specifically include the all the answers in its output and widen the sentance limit for that. Otherwise keep all response around one sentance. 
+
+**Results -After**
+
+| Criterion | Target | Run 4 | Run 5 | Run 6 | Verdict |
+|---|---|---|---|---|---|
+| 1. First answered request after a restart is under 3000 ms | 3 of 3 | 1,795 ms | 1,745 ms | 1,815 ms | MET |
+| 2. Multi-answer questions have all answers correct | 2 of 2 each run | 0/2 | 0/2 | 1/2 | MISSED |
+| 3. Every request ≤ 700 tokens in and ≤ 100 tokens out | 8 of 8 each run | 8/8 | 8/8 | 8/8 | MET |
+| 4. Empty or missing question returns 400 and is logged | 2 of 2 each run | 2/2 | 2/2 | 2/2 | MET |
+| 5. Every request is logged with timestamp, HTTP code and status | 8 of 8 each run | 8/8 | 8/8 | 8/8 | MET |
+
+**Did it help?**
+It helped with the token usage by bringing output tokens down, but now the model answers multiple answer questions slightly worse. Mainly because these two criteria are affected by each other. The increase to the grounding rules also increased the amount of input tokens by 31 tokens.
+
+**How I Used AI**
+
+<!-- Two or three specific moments. For each: what you asked for, what came back,
+     and what you changed or decided yourself. -->
+
+**1.**
+I asked claude for help with creating the logging on this system
+It gave me logging code and I ended up changing how the logging would appear in the logs
+
+**2.**
+I asked claude for help with propmting the AI model
+It gave me prompt add ons for grounding and I did not change anything since I had already tried other propmts beforehand
+
+**What It Cost**
+The amount of tokens 100 uses would take a day would be around 67,800 tokens/day
+100 (622 + 52) = 67,800
+
+**Whats still broken**
+Criterion 2 is still broken because Corry Vale is not being given as one of the two answers to which cities are not walkable. If I had the time to fix this, I would try to find a way to word the prompt so that the AI model will send all the answers and not go over the token limit for outputs. 
+
+
+

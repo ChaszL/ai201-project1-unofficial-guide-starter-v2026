@@ -177,7 +177,7 @@ The cost of using an API with this system is important, if too many tokens are i
 When the question key is empty with "" or none-existent the log will show the request as its http code or error across all trials
 
 **Why this target:**
-It is important for the user to know where they went wrong is submitting a request to the system. this ensures that the user and anyone trying to help knows what happened. 
+It is important for the user to know where they went wrong in submitting a request to the system. this ensures that the user and anyone trying to help knows what happened. 
 
 ---
 
@@ -186,4 +186,4 @@ It is important for the user to know where they went wrong is submitting a reque
 every request made in all three trials will be logged with a timestamp, http code/error and answer status
 
 **Why this target:**
-It is important for all request even the failures to be logged so that things like system going down or system spamming can be found. 
+It is important for all request, even failures to be logged so that things like system going down or system spamming can be found. 
