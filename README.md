@@ -486,16 +486,15 @@ All lines below are copied from `logs/runs.jsonl`. Produced by `serve.py` → `a
 
 *Criterion 2: Multi-answer questions (MISSED, 1/2 each run)*
 
-- **What happened:** <!-- Which answer was missing in which run. -->
-- **Stage:** <!-- loading → chunking → embedding → retrieval → generation. Which one? -->
-- **How I know:** <!-- Point to the evidence in the log, e.g. the `sources` field vs. the `answer` field. -->
-- **Mechanism:** <!-- Why that stage drops the answer, not just where. -->
+- **What happened:** There are 3 towns that work well during the winter, and in one run only one town was named as difficult to walk in, but there are two. 
+- **Stage:** The stage for this would be generation as the model could have just forgotten to include those answers. 
+- **How I know & Mechanism:** The used files in these runs had the answers in them and other answers from other runs also had the correct answers. This means the model just did not include those answers in the response.
 
 *Criterion 3: Token cost (MISSED, 7/8 in Run 1)*
 
-- **What happened:** <!-- Which request went over, and by how much. -->
-- **Stage:** <!-- Which stage controls this number? -->
-- **How I know:** <!-- Point to the log line: tokens_in, tokens_out. -->
-- **Mechanism:** <!-- Why that request was longer than the others. -->
+- **What happened:** One of the answers had a very long paragraph as the answer which cause a lot of output tokens to be used.
+- **Stage:** Model generating controls this number
+- **How I know:** I know this is the problem because in the log, it says that 118 tokens were used which directly points to the model using that many tokens.
+- **Mechanism:** The answer was too long because the model was answering a question that had multiple answers and it was trying to give multiple answers. 
 
-<!-- Is there a pattern linking the two misses? Say so here if there is. -->
+There is a propmting pattern where propmting needs to be changed to answer multiple questions but also try to also limit how much is said on top of answering the questions. 
