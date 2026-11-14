@@ -375,10 +375,6 @@ I chose Shape A (Deploy and instrument) and Path B (Running Locally): I choose t
 **Out of Scope**
 I will not be changing my test questions, chunking, or top-k from unit two. I am not changing chunking and top-k because changing them in the past caused the model to give different answers, which were often wrong. I am not changing my test questions because then my before and after runs would not be measuring the same thing. 
 
-**Instrumentation**
-
-Every request to `/ask` writes one JSON line to `logs/runs.jsonl`, produced by `runlog.py::log_run`, called from `serve.py::ask`. Failed requests (bad input and crashes) are logged too.
-
 **Running It**
 
 Path B, local with logs. Full setup is in [RUNNING.md](RUNNING.md).
@@ -391,6 +387,10 @@ Path B, local with logs. Full setup is in [RUNNING.md](RUNNING.md).
       $env:AI201_CACHE = "0"; python serve.py
 
   The server runs at http://localhost:5000. Every request adds one line to `logs/runs.jsonl`.
+
+**Instrumentation**
+
+Every request to `/ask` writes one JSON line to `logs/runs.jsonl`, produced by `runlog.py::log_run`, called from `serve.py::ask`. Failed requests (bad input and crashes) are logged too.
 
 | Field | What it holds |
 |---|---|
@@ -438,6 +438,9 @@ The first request made to the RAG system took longer than the other request whic
 Average tokens per answered question, ~622 tokens in and ~56 tokens out and an average duration of 946ms per answered question.
 
 How I measured it: I ran 10 questions through the server with the cache off AI201_CACHE=0, then averaged the tokens_in and tokens_out fields from those 10 log lines. Refused questions cost 0 tokens.
+
+The amount of tokens 100 uses would take a day would be around 67,800 tokens/day
+100 (622 + 56) = 67,800
 
 
 
@@ -541,12 +544,11 @@ It gave me logging code and I ended up changing how the logging would appear in 
 I asked claude for help with propmting the AI model
 It gave me prompt add ons for grounding and I did not change anything since I had already tried other propmts beforehand
 
-**What It Cost**
-The amount of tokens 100 uses would take a day would be around 67,800 tokens/day
-100 (622 + 52) = 67,800
-
 **Whats still broken**
-Criterion 2 is still broken because Corry Vale is not being given as one of the two answers to which cities are not walkable. If I had the time to fix this, I would try to find a way to word the prompt so that the AI model will send all the answers and not go over the token limit for outputs. 
+Criterion 2 is still broken because Corry Vale is not being given as one of the two answers to which cities are not walkable. If I had the time to fix this, I would try to find a way to word the prompt so that the AI model will send all the answers and not go over the token limit for outputs. I would try this because if I could find the best wording, I could possibly get both criterions to work together instead of against each other 
+
+**Why I stopped**
+I stopped here because I tried multiple different prompts that cause criterion 2 to fail, so I found this as a good stopping place.
 
 
 
