@@ -138,3 +138,52 @@ Since I have two questions that have multiple answers, I want to make sure that 
      The whole reason the originals stay visible is so someone can see what you
      said before you knew the answer.
      ───────────────────────────────────────────────────────────────────────── -->
+
+---
+
+# Capstone criteria (Unit 9)
+
+---
+
+## C1. Cold-start speed
+
+The first successful 200 code request made after restarting the server will take below 3000ms on 3/3 trials
+
+**Why this target:**
+For users of this RAG system, time is important especially to navigate the region. Making sure that the users are able to get fast answers even when the server is restarting is important. 
+
+---
+
+## C2. Multi-answer questions
+
+All multi-answer questions will have 2/2 answers answered correctly
+
+**Why this target:**
+Users can ask any type of questions, so ensuring that multi-answer questions are answered with multiple correct answers is important.
+
+---
+
+## C3. Token cost per question
+
+all request should not cost more than 700 tokens for input and no more than 100 tokens for output over three trials
+
+**Why this target:**
+The cost of using an API with this system is important, if too many tokens are inputted and too many outputted, there could be too much money spent on running the service.
+
+---
+
+## C4. Empty or missing question (bad path)
+
+When the question key is empty with "" or none-existent the log will show the request as its http code or error across all trials
+
+**Why this target:**
+It is important for the user to know where they went wrong is submitting a request to the system. this ensures that the user and anyone trying to help knows what happened. 
+
+---
+
+## C5. Every request is logged
+
+every request made in all three trials will be logged with a timestamp, http code/error and answer status
+
+**Why this target:**
+It is important for all request even the failures to be logged so that things like system going down or system spamming can be found. 
