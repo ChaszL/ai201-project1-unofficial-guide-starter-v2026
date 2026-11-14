@@ -428,3 +428,74 @@ How I measured it: I ran 10 questions through the server with the cache off AI20
 
 
 
+
+**Results**
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. First answered request after a restart is under 3000 ms | 3 of 3 | 2,024 ms | 1,986 ms | 1,938 ms | MET |
+| 2. Multi-answer questions have all answers correct | 2 of 2 each run | 1/2 | 1/2 | 1/2 | MISSED |
+| 3. Every request ≤ 700 tokens in and ≤ 100 tokens out | 8 of 8 each run | 7/8 | 8/8 | 8/8 | MISSED |
+| 4. Empty or missing question returns 400 and is logged | 2 of 2 each run | 2/2 | 2/2 | 2/2 | MET |
+| 5. Every request is logged with timestamp, HTTP code and status | 8 of 8 each run | 8/8 | 8/8 | 8/8 | MET |
+
+**Evidence (Run 1)**
+
+All lines below are copied from `logs/runs.jsonl`. Produced by `serve.py` → `ask()`, which calls `app.py` → `ask_pipeline()` for the answer and writes the line with `runlog.py` → `log_run()` into `logs/runs.jsonl`.
+
+*Criterion 1: cold start.* First request after restarting the server; `duration_ms` is 2024.0.
+
+```json
+{"timestamp": "2026-11-14T01:52:47.233+00:00", "status": "answered", "http_status": 200, "question": "Which towns have difficult terrain to walk through?", "answer": "Based on the provided documents, **Halden Bay** has difficult terrain because the town is built on three levels connected by stepped lanes, making it hard going with luggage or a pushchair, and everything above the level harbour front is not level (*guide_halden_bay.md*). \n\nAdditionally, the **Corry Vale** circuit involves moderate terrain with hills, including 500 metres of ascent, and the footpath network can become genuinely boggy outside of May to September (*guide_corry_vale.md* and *guide_walking.md*).", "refused": false, "best_distance": 0.4307, "threshold": 0.65, "sources": ["guide_accessibility.md", "guide_corry_vale.md", "guide_halden_bay.md", "guide_walking.md"], "corpus": "city_guides", "top_k": 6, "duration_ms": 2024.0, "error": null, "tokens_in": 585, "tokens_out": 118, "model_calls": 1, "cache_hit": false}
+```
+
+*Criterion 2: multi-answer questions.* The `answer` field of the terrain and winter questions.
+
+```json
+{"timestamp": "2026-11-14T01:52:47.233+00:00", "status": "answered", "http_status": 200, "question": "Which towns have difficult terrain to walk through?", "answer": "Based on the provided documents, **Halden Bay** has difficult terrain because the town is built on three levels connected by stepped lanes, making it hard going with luggage or a pushchair, and everything above the level harbour front is not level (*guide_halden_bay.md*). \n\nAdditionally, the **Corry Vale** circuit involves moderate terrain with hills, including 500 metres of ascent, and the footpath network can become genuinely boggy outside of May to September (*guide_corry_vale.md* and *guide_walking.md*).", "refused": false, "best_distance": 0.4307, "threshold": 0.65, "sources": ["guide_accessibility.md", "guide_corry_vale.md", "guide_halden_bay.md", "guide_walking.md"], "corpus": "city_guides", "top_k": 6, "duration_ms": 2024.0, "error": null, "tokens_in": 585, "tokens_out": 118, "model_calls": 1, "cache_hit": false}
+{"timestamp": "2026-11-14T01:52:49.712+00:00", "status": "answered", "http_status": 200, "question": "Which place in the region is normally open during the winter?", "answer": "Marchwood is the one place in the region that works in winter, as almost everything is indoors and nothing closes seasonally (*guide_marchwood.md*). Thornby_wells is also described as a reliable winter destination (*guide_thornby_wells.md*).", "refused": false, "best_distance": 0.4761, "threshold": 0.65, "sources": ["guide_corry_vale.md", "guide_givens_mill.md", "guide_halden_bay.md", "guide_marchwood.md", "guide_seasons.md", "guide_thornby_wells.md"], "corpus": "city_guides", "top_k": 6, "duration_ms": 619.6, "error": null, "tokens_in": 601, "tokens_out": 55, "model_calls": 1, "cache_hit": false}
+```
+
+*Criterion 3: token cost.* The one request over a limit: `tokens_out` is 118 (limit 100). `tokens_in` is 585.
+
+```json
+{"timestamp": "2026-11-14T01:52:47.233+00:00", "status": "answered", "http_status": 200, "question": "Which towns have difficult terrain to walk through?", "answer": "Based on the provided documents, **Halden Bay** has difficult terrain because the town is built on three levels connected by stepped lanes, making it hard going with luggage or a pushchair, and everything above the level harbour front is not level (*guide_halden_bay.md*). \n\nAdditionally, the **Corry Vale** circuit involves moderate terrain with hills, including 500 metres of ascent, and the footpath network can become genuinely boggy outside of May to September (*guide_corry_vale.md* and *guide_walking.md*).", "refused": false, "best_distance": 0.4307, "threshold": 0.65, "sources": ["guide_accessibility.md", "guide_corry_vale.md", "guide_halden_bay.md", "guide_walking.md"], "corpus": "city_guides", "top_k": 6, "duration_ms": 2024.0, "error": null, "tokens_in": 585, "tokens_out": 118, "model_calls": 1, "cache_hit": false}
+```
+
+*Criterion 4: empty or missing question.* Request bodies were `{"question": ""}` and `{"foo": "bar"}`; both returned 400 and were logged as `bad_request`.
+
+```json
+{"timestamp": "2026-11-14T01:52:50.383+00:00", "status": "bad_request", "http_status": 400, "question": "", "answer": null, "refused": null, "best_distance": null, "threshold": 0.65, "sources": [], "corpus": "city_guides", "top_k": 6, "duration_ms": 0.1, "error": "Send JSON with a question in it, like {\"question\": \"Which region is mostly open during winter?\"}", "tokens_in": 0, "tokens_out": 0, "model_calls": 0, "cache_hit": false}
+{"timestamp": "2026-11-14T01:52:50.385+00:00", "status": "bad_request", "http_status": 400, "question": "", "answer": null, "refused": null, "best_distance": null, "threshold": 0.65, "sources": [], "corpus": "city_guides", "top_k": 6, "duration_ms": 0.0, "error": "Send JSON with a question in it, like {\"question\": \"Which region is mostly open during winter?\"}", "tokens_in": 0, "tokens_out": 0, "model_calls": 0, "cache_hit": false}
+```
+
+*Criterion 5: every request logged.* 8 requests were sent in Run 1 and these are the 8 lines that were added, each with a timestamp, `http_status` and `status`.
+
+```json
+{"timestamp": "2026-11-14T01:52:47.233+00:00", "status": "answered", "http_status": 200, "question": "Which towns have difficult terrain to walk through?", "answer": "Based on the provided documents, **Halden Bay** has difficult terrain because the town is built on three levels connected by stepped lanes, making it hard going with luggage or a pushchair, and everything above the level harbour front is not level (*guide_halden_bay.md*). \n\nAdditionally, the **Corry Vale** circuit involves moderate terrain with hills, including 500 metres of ascent, and the footpath network can become genuinely boggy outside of May to September (*guide_corry_vale.md* and *guide_walking.md*).", "refused": false, "best_distance": 0.4307, "threshold": 0.65, "sources": ["guide_accessibility.md", "guide_corry_vale.md", "guide_halden_bay.md", "guide_walking.md"], "corpus": "city_guides", "top_k": 6, "duration_ms": 2024.0, "error": null, "tokens_in": 585, "tokens_out": 118, "model_calls": 1, "cache_hit": false}
+{"timestamp": "2026-11-14T01:52:48.317+00:00", "status": "answered", "http_status": 200, "question": "When is the market in Bridgewater square open?", "answer": "Based on the documents provided, Brightwater's Tuesday market sets up in the square at 7am and is finished by 1pm. \n\nSource: `guide_brightwater.md` (and also mentioned in `guide_eating.md`)", "refused": false, "best_distance": 0.4162, "threshold": 0.65, "sources": ["guide_brightwater.md", "guide_eating.md", "guide_halden_bay.md", "guide_kestrelford.md", "guide_seasons.md"], "corpus": "city_guides", "top_k": 6, "duration_ms": 1065.1, "error": null, "tokens_in": 667, "tokens_out": 53, "model_calls": 1, "cache_hit": false}
+{"timestamp": "2026-11-14T01:52:49.090+00:00", "status": "answered", "http_status": 200, "question": "Where is cash useful in the region?", "answer": "Cash is useful at the market and in smaller places. \n\nThis information comes from `guide_pellew_sands.md`, `guide_thornby_wells.md`, `guide_brightwater.md`, `guide_marchwood.md`, `guide_givens_mill.md`, and `guide_kestrelford.md`.", "refused": false, "best_distance": 0.4397, "threshold": 0.65, "sources": ["guide_brightwater.md", "guide_givens_mill.md", "guide_kestrelford.md", "guide_marchwood.md", "guide_pellew_sands.md", "guide_thornby_wells.md"], "corpus": "city_guides", "top_k": 6, "duration_ms": 748.1, "error": null, "tokens_in": 566, "tokens_out": 75, "model_calls": 1, "cache_hit": false}
+{"timestamp": "2026-11-14T01:52:49.712+00:00", "status": "answered", "http_status": 200, "question": "Which place in the region is normally open during the winter?", "answer": "Marchwood is the one place in the region that works in winter, as almost everything is indoors and nothing closes seasonally (*guide_marchwood.md*). Thornby_wells is also described as a reliable winter destination (*guide_thornby_wells.md*).", "refused": false, "best_distance": 0.4761, "threshold": 0.65, "sources": ["guide_corry_vale.md", "guide_givens_mill.md", "guide_halden_bay.md", "guide_marchwood.md", "guide_seasons.md", "guide_thornby_wells.md"], "corpus": "city_guides", "top_k": 6, "duration_ms": 619.6, "error": null, "tokens_in": 601, "tokens_out": 55, "model_calls": 1, "cache_hit": false}
+{"timestamp": "2026-11-14T01:52:50.316+00:00", "status": "answered", "http_status": 200, "question": "When do the pubs serve food in Kestrelford?", "answer": "In Kestrelford, the pubs serve food between 12 and 2 and again between 6 and 8:30 (as mentioned in *guide_kestrelford.md* and *guide_eating.md*).", "refused": false, "best_distance": 0.2852, "threshold": 0.65, "sources": ["guide_corry_vale.md", "guide_eating.md", "guide_elder_ness.md", "guide_givens_mill.md", "guide_kestrelford.md"], "corpus": "city_guides", "top_k": 6, "duration_ms": 588.3, "error": null, "tokens_in": 660, "tokens_out": 49, "model_calls": 1, "cache_hit": false}
+{"timestamp": "2026-11-14T01:52:50.360+00:00", "status": "refused", "http_status": 200, "question": "What is the capital of Mongolia?", "answer": "I don't have enough information about that.", "refused": true, "best_distance": 0.7981, "threshold": 0.65, "sources": [], "corpus": "city_guides", "top_k": 6, "duration_ms": 23.9, "error": null, "tokens_in": 0, "tokens_out": 0, "model_calls": 0, "cache_hit": false}
+{"timestamp": "2026-11-14T01:52:50.383+00:00", "status": "bad_request", "http_status": 400, "question": "", "answer": null, "refused": null, "best_distance": null, "threshold": 0.65, "sources": [], "corpus": "city_guides", "top_k": 6, "duration_ms": 0.1, "error": "Send JSON with a question in it, like {\"question\": \"Which region is mostly open during winter?\"}", "tokens_in": 0, "tokens_out": 0, "model_calls": 0, "cache_hit": false}
+{"timestamp": "2026-11-14T01:52:50.385+00:00", "status": "bad_request", "http_status": 400, "question": "", "answer": null, "refused": null, "best_distance": null, "threshold": 0.65, "sources": [], "corpus": "city_guides", "top_k": 6, "duration_ms": 0.0, "error": "Send JSON with a question in it, like {\"question\": \"Which region is mostly open during winter?\"}", "tokens_in": 0, "tokens_out": 0, "model_calls": 0, "cache_hit": false}
+```
+
+**Diagnoses**
+
+*Criterion 2: Multi-answer questions (MISSED, 1/2 each run)*
+
+- **What happened:** <!-- Which answer was missing in which run. -->
+- **Stage:** <!-- loading → chunking → embedding → retrieval → generation. Which one? -->
+- **How I know:** <!-- Point to the evidence in the log, e.g. the `sources` field vs. the `answer` field. -->
+- **Mechanism:** <!-- Why that stage drops the answer, not just where. -->
+
+*Criterion 3: Token cost (MISSED, 7/8 in Run 1)*
+
+- **What happened:** <!-- Which request went over, and by how much. -->
+- **Stage:** <!-- Which stage controls this number? -->
+- **How I know:** <!-- Point to the log line: tokens_in, tokens_out. -->
+- **Mechanism:** <!-- Why that request was longer than the others. -->
+
+<!-- Is there a pattern linking the two misses? Say so here if there is. -->
